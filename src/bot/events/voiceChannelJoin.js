@@ -13,6 +13,9 @@ module.exports = {
           icon_url: member.avatarURL
         },
         description: `**${member.username}#${member.discriminator}** joined voice channel: ${channel.name}.`,
+        thumbnail: {
+          url: member.avatarURL
+        },
         fields: [{
           name: 'Channel',
           value: `<#${channel.id}> (${channel.name})`

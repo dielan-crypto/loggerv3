@@ -13,6 +13,9 @@ module.exports = {
     if (!guildSettings) await cacheGuild(message.channel.guild.id)
     if (!global.bot.guildSettingsCache[message.channel.guild.id].isChannelIgnored(message.channel.id)) {
       if (!global.bot.guildSettingsCache[message.channel.guild.id].isLogBots() && message.author.bot) return
+      if (!global.bot.guildSettingsCache[message.channel.guild.id].getEventLogRaw().messageDelete && !global.bot.guildSettingsCache[message.channel.guild.id].getEventLogRaw().messageDeleteBulk) {
+        return
+      }
       await cacheMessage(message)
     }
   }

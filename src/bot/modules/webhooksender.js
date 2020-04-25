@@ -1,4 +1,4 @@
-const EVENTS_USING_AUDITLOGS = require('../utils/constants').EVENTS_USING_AUDITLOGS
+const { EVENTS_USING_AUDITLOGS } = require('../utils/constants')
 const webhookCache = require('./webhookcache')
 const guildWebhookCacher = require('./guildWebhookCacher')
 const cacheGuild = require('../utils/cacheGuild')
@@ -13,7 +13,7 @@ module.exports = async pkg => {
     global.webhook.warn(`Invalid guild ID sent in package! ${pkg.guildID} (I am not a member anymore!)`)
     return
   }
-  if (!guild.members.get(global.bot.user.id).permission.json['manageWebhooks'] || !guild.members.get(global.bot.user.id).permission.json['viewAuditLogs']) return
+  if (!guild.members.get(global.bot.user.id).permission.json.manageWebhooks || !guild.members.get(global.bot.user.id).permission.json.viewAuditLogs) return
   const guildSettings = global.bot.guildSettingsCache[pkg.guildID]
   if (!guildSettings) {
     await cacheGuild(pkg.guildID)
@@ -28,7 +28,6 @@ module.exports = async pkg => {
   }
   if (!webhook && guildSettings.getEventByName(pkg.eventName)) {
     await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
-    return
   } else if (webhook && !guildSettings.eventIsDisabled(pkg.eventName)) {
     if (!pkg.embed.footer) {
       pkg.embed.footer = {
@@ -47,9 +46,9 @@ module.exports = async pkg => {
     }).catch(async e => {
       global.logger.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
       global.webhook.warn(`Got ${e.code} while sending webhook to ${pkg.guildID} (${global.bot.guilds.get(pkg.guildID) ? global.bot.guilds.get(pkg.guildID).name : 'Could not find guild!'})`)
-      if (e.code == '10015') { // Webhook doesn't exist anymore.
+      if (e.code === 10015) { // Webhook doesn't exist anymore. PLEASE do not be the wrong type.
         await global.redis.del(`webhook-${guildSettings.getEventByName(pkg.eventName)}`)
-        return await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
+        await guildWebhookCacher(pkg.guildID, guildSettings.getEventByName(pkg.eventName))
       } else {
         console.error('Error while sending a message over webhook!', e, pkg, pkg.embed.fields)
       }

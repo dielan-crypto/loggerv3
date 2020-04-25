@@ -1,21 +1,18 @@
 const sa = require('superagent')
-const getMessageById = require('../../db/interfaces/postgres/read').getMessageById
+const getMessagesByIds = require('../../db/interfaces/postgres/read').getMessagesByIds
 const send = require('../modules/webhooksender')
 
 module.exports = {
   name: 'messageDeleteBulk',
   type: 'on',
   handle: async messages => {
-    let dbMessages = []
-    await messages.forEach(async (m, i) => {
-      const message = await getMessageById(m.id)
-      if (message) dbMessages.push(message)
-      if (i === messages.length - 1) await paste(dbMessages, messages[0].channel.guild.id)
-    })
+    if (messages.length === 0) return
+    const dbMessages = await getMessagesByIds(messages.map(m => m.id))
+    await paste(dbMessages, messages[0].channel.guild.id)
   }
 }
 
-async function paste(messages, guildID) {
+async function paste (messages, guildID) {
   const messageDeleteBulkEvent = {
     guildID: guildID,
     eventName: 'messageDeleteBulk',

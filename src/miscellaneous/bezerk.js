@@ -33,13 +33,13 @@ function start () {
           op: '1003', // IDENTIFY_SUPPLY
           c: {
             secret: secret,
-            shard: cluster.worker.rangeForShard
+            shard: cluster.worker.rangeForShard // eslint-disable-line no-undef
           }
         })
       }
       case '1002': { // IDENTIFY_REPLY
         if (msg.c.success === true) {
-          global.logger.info(`Bezerk connection fully open.`)
+          global.logger.info('Bezerk connection fully open.')
           global.logger.info('Successfully connected to Bezerk.')
         } else {
           global.logger.warn('Bezerk rejected authentication! Not reconnecting.')
@@ -47,19 +47,20 @@ function start () {
         break
       }
       case '2001': { // REQUEST
-        const bot = global.bot
+        const bot = global.bot // eslint-disable-line no-unused-vars
         try {
           if (msg.c.startsWith('recache')) {
             msg.c = msg.c.replace('recache ', '')
             cacheGuild(msg.c)
           } else {
-          const resp = eval(msg.c) // TODO: replace eval with more OP codes for each use
-          send({
-            op: '2002', // REQUEST_REPLY
-            c: resp,
-            uuid: msg.uuid
-          })
-        }
+            // TODO: replace eval with more OP codes for each use
+            const resp = eval(msg.c) // eslint-disable-line no-eval
+            send({
+              op: '2002', // REQUEST_REPLY
+              c: resp,
+              uuid: msg.uuid
+            })
+          }
         } catch (e) {
           send({
             op: '5000', // CANNOT_COMPLY

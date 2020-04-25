@@ -13,6 +13,9 @@ module.exports = {
           name: `${user.username}#${user.discriminator}`,
           icon_url: user.avatarURL
         },
+        thumbnail: {
+          url: user.avatarURL
+        },
         description: `${user.username}#${user.discriminator} was unbanned`,
         fields: [{
           name: 'User Information',

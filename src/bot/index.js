@@ -6,7 +6,7 @@ const redisLock = require('../db/interfaces/redis/redislock')
 const indexCommands = require('../miscellaneous/commandIndexer')
 const listenerIndexer = require('../miscellaneous/listenerIndexer')
 const cacheGuildInfo = require('./utils/cacheGuildSettings')
-const deleteMessagesOlderThanDays = require('./modules/oldmessageremover').removeMessagesOlderThanDays
+const eventMiddleware = require('./modules/eventmiddleware')
 
 require('dotenv').config()
 Raven.config(process.env.RAVEN_URI).install()
@@ -22,7 +22,7 @@ function connect () {
     global.logger.startup(`Shards ${cluster.worker.rangeForShard} have obtained a lock and are connecting now. Configured Redis TTL is ${process.env.REDIS_LOCK_TTL}ms.`)
     global.bot.connect()
     global.bot.once('ready', () => {
-      lock.unlock().catch(function (err) {
+      lock.unlock().catch(_ => {
         global.logger.warn(cluster.worker.rangeForShard + ' could not unlock, waiting')
       })
     })
@@ -40,15 +40,20 @@ async function init () {
     firstShardID: cluster.worker.shardStart,
     lastShardID: cluster.worker.shardEnd,
     maxShards: cluster.worker.totalShards,
-    disableEvents: { TYPING_START: true },
+    intents: [
+      'guilds',
+      'guildMessages',
+      'guildMembers',
+      'guildInvites',
+      'guildBans',
+      'guildEmojis',
+      'guildVoiceStates'
+    ],
     restMode: true,
     messageLimit: 0,
     autoreconnect: true,
-    getAllUsers: true,
     ratelimiterOffset: 400
   })
-
-  global.bot.on('ratelimit', console.error)
 
   global.bot.editStatus('dnd', {
     name: 'Bot is booting'
@@ -62,15 +67,12 @@ async function init () {
   await cacheGuildInfo()
   const [on, once] = listenerIndexer()
 
-  on.forEach(async event => global.bot.on(event.name, await event.handle))
-  once.forEach(async event => global.bot.once(event.name, await event.handle))
+  on.forEach(async event => eventMiddleware(event, 'on'))
+  once.forEach(async event => eventMiddleware(event, 'once'))
 
   require('../miscellaneous/bezerk')
 
   connect()
-
-  // const oldMessagesDeleted = await deleteMessagesOlderThanDays(process.env.MESSAGE_HISTORY_DAYS) debating on removing these
-  // global.logger.info(`${oldMessagesDeleted} messages were deleted due to being older than ${process.env.MESSAGE_HISTORY_DAYS} day(s).`)
 }
 process.on('exit', (code) => {
   global.logger.error(`The process is exiting with code ${code}. Terminating pgsql connections...`)

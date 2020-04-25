@@ -1,6 +1,5 @@
 const pool = require('../../clients/postgres')
 const getDoc = require('./read').getGuild
-const getMessageById = require('./read').getMessageById
 const getUser = require('./read').getUser
 const cacheGuild = require('../../../bot/utils/cacheGuild')
 const getMessageFromBatch = require('../../messageBatcher').getMessage
@@ -30,38 +29,42 @@ const eventList = [
   'voiceStateUpdate',
   'voiceChannelSwitch',
   'guildEmojisUpdate',
-  'guildMemberNickUpdate'
+  'guildMemberNickUpdate',
+  'inviteCreate',
+  'inviteDelete'
 ]
 
 const eventLogs = {
-  'channelCreate': '',
-  'channelUpdate': '',
-  'channelDelete': '',
-  'guildBanAdd': '',
-  'guildBanRemove': '',
-  'guildRoleCreate': '',
-  'guildRoleDelete': '',
-  'guildRoleUpdate': '',
-  'guildUpdate': '',
-  'messageDelete': '',
-  'messageDeleteBulk': '',
-  'messageReactionRemoveAll': '',
-  'messageUpdate': '',
-  'guildMemberAdd': '',
-  'guildMemberKick': '',
-  'guildMemberRemove': '',
-  'guildMemberUpdate': '',
-  'voiceChannelLeave': '',
-  'voiceChannelJoin': '',
-  'voiceStateUpdate': '',
-  'voiceChannelSwitch': '',
-  'guildEmojisUpdate': '',
-  'guildMemberNickUpdate': ''
+  channelCreate: '',
+  channelUpdate: '',
+  channelDelete: '',
+  guildBanAdd: '',
+  guildBanRemove: '',
+  guildRoleCreate: '',
+  guildRoleDelete: '',
+  guildRoleUpdate: '',
+  guildUpdate: '',
+  messageDelete: '',
+  messageDeleteBulk: '',
+  messageReactionRemoveAll: '',
+  messageUpdate: '',
+  guildMemberAdd: '',
+  guildMemberKick: '',
+  guildMemberRemove: '',
+  guildMemberUpdate: '',
+  voiceChannelLeave: '',
+  voiceChannelJoin: '',
+  voiceStateUpdate: '',
+  voiceChannelSwitch: '',
+  guildEmojisUpdate: '',
+  guildMemberNickUpdate: '',
+  inviteCreate: '',
+  inviteDelete: ''
 }
 
 async function clearEventLog (guildID) {
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [eventLogs, guildID])
 }
 
 async function clearEventByID (guildID, channelID) {
@@ -82,7 +85,7 @@ async function setAllEventsOneId (guildID, channelID) {
     doc.event_logs[event] = channelID
   })
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
 async function setEventsLogId (guildID, channelID, events) {
@@ -91,7 +94,7 @@ async function setEventsLogId (guildID, channelID, events) {
     doc.event_logs[event] = channelID
   })
   await cacheGuild(guildID)
-  return await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
+  await pool.query('UPDATE guilds SET event_logs=$1 WHERE id=$2', [doc.event_logs, guildID])
 }
 
 async function disableEvent (guildID, event) {
@@ -135,13 +138,13 @@ async function updateNames (userID, name) {
   const doc = await getUser(userID)
   doc.names.push(name)
   doc.names = aes.encrypt(JSON.stringify(doc.names))
-  return await pool.query('UPDATE users SET names=$1 WHERE id=$2', [doc.names, userID])
+  await pool.query('UPDATE users SET names=$1 WHERE id=$2', [doc.names, userID])
 }
 
 async function updateMessageByID (id, content) {
   const batchMessage = await getMessageFromBatch(id)
   if (!batchMessage) {
-    return await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content ? content : 'EMPTY STRING'), id])
+    await pool.query('UPDATE messages SET content=$1 WHERE id=$2', [aes.encrypt(content || 'EMPTY STRING'), id])
   } else {
     updateBatchMessage(id, content)
   }

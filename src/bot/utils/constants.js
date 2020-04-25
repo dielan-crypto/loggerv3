@@ -21,7 +21,10 @@ exports.ALL_EVENTS = [
   'voiceChannelJoin',
   'voiceStateUpdate',
   'voiceChannelSwitch',
-  'guildEmojisUpdate']
+  'guildEmojisUpdate',
+  'inviteCreate',
+  'inviteDelete'
+]
 
 exports.EVENTS_USING_AUDITLOGS = [
   'channelCreate',

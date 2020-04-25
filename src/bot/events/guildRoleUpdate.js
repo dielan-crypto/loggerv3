@@ -11,7 +11,12 @@ module.exports = {
       eventName: 'guildRoleUpdate',
       embed: {
         description: 'A role was updated',
-        fields: [],
+        fields: [
+          {
+            name: 'Name',
+            value: role.name
+          }
+        ],
         color: role.color ? role.color : 3553599
       }
     }
@@ -35,7 +40,8 @@ module.exports = {
     if (!logs) return
     const log = logs.entries[0]
     if (!log) {
-      return await send(guildRoleUpdateEvent) // just send the embed and stop there.
+      await send(guildRoleUpdateEvent) // just send the embed and stop there.
+      return
     }
     const perp = logs.users[0]
     if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) {
@@ -63,8 +69,8 @@ module.exports = {
 function intToHex (num) {
   num >>>= 0
   const b = num & 0xFF
-      const g = (num & 0xFF00) >>> 8
-      const r = (num & 0xFF0000) >>> 16
+  const g = (num & 0xFF00) >>> 8
+  const r = (num & 0xFF0000) >>> 16
   return rgbToHex(r, g, b)
 }
 

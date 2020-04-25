@@ -14,6 +14,9 @@ module.exports = {
           icon_url: member.avatarURL
         },
         description: `**${member.username}#${member.discriminator}** ${member.nick ? `(${member.nick})` : ''} moved from <#${oldChannel.id}> (${oldChannel.name}) to <#${channel.id}> (${channel.name}).`,
+        thumbnail: {
+          url: member.avatarURL
+        },
         fields: [{
           name: 'Current channel they are in',
           value: `<#${channel.id}> (${channel.name})`

@@ -3,7 +3,7 @@ const util = require('util')
 module.exports = {
   func: async (message, suffix) => {
     try { // This eval command is from https://github.com/TheSharks/WildBeast/ because I really like their method
-      const returned = eval(suffix)
+      const returned = eval(suffix) // eslint-disable-line no-eval
       let str = util.inspect(returned, {
         depth: 1
       })

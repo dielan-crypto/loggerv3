@@ -3,7 +3,7 @@ global.webhook = require('./src/miscellaneous/webhooklogger')
 global.cluster = require('cluster')
 require('./src/miscellaneous/logger')
 require('dotenv').config()
-if (cluster.isMaster) {
+if (global.cluster.isMaster) {
   console.log('Master node init')
   require('./primary')
 } else {

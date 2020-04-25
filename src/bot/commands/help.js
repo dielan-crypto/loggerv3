@@ -4,24 +4,24 @@ module.exports = {
     try {
       DMC = await message.author.getDMChannel()
     } catch (e) {
-      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`).catch(() => {return})
+      return message.channel.createMessage(`<@${message.author.id}>, you're not capable of receiving a DM from me.`).catch(() => {})
     }
     const embed = {
-      'description': 'Below, you can see my commands listed by name and description. If it has arguments you can pass, an example will be included.',
-      'color': 3553599,
-      'timestamp': new Date(),
-      'footer': {
-        'icon_url': global.bot.user.avatarURL,
-        'text': `${global.bot.user.username}#${global.bot.user.discriminator}`
+      description: 'Below, you can see my commands listed by name and description. If it has arguments you can pass, an example will be included.',
+      color: 3553599,
+      timestamp: new Date(),
+      footer: {
+        icon_url: global.bot.user.avatarURL,
+        text: `${global.bot.user.username}#${global.bot.user.discriminator}`
       },
-      'thumbnail': {
-        'url': global.bot.user.avatarURL
+      thumbnail: {
+        url: global.bot.user.avatarURL
       },
-      'author': {
-        'name': `${message.author.username}#${message.author.discriminator}`,
-        'icon_url': message.author.avatarURL
+      author: {
+        name: `${message.author.username}#${message.author.discriminator}`,
+        icon_url: message.author.avatarURL
       },
-      'fields': []
+      fields: []
     }
     Object.values(global.bot.commands).forEach(command => {
       if (!command.hidden) {
@@ -32,6 +32,10 @@ module.exports = {
       }
     })
     embed.fields.push({
+      name: 'Dashboard',
+      value: 'Do you hate entering commands in chat or don\'t want to read the help message (please do)? Visit my configuration dashboard at <https://logger.bot> and ditch commands in chat.'
+    },
+    {
       name: 'Open Source',
       value: 'I am OSS at https://github.com/caf203/loggerv3'
     },

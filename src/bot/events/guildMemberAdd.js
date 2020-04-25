@@ -1,12 +1,13 @@
 const send = require('../modules/webhooksender')
 const inviteCache = require('../modules/invitecache')
+const inviteJoinBroker = require('../modules/invitejoinbroker')
 const getUser = require('../../db/interfaces/postgres/read').getUser
 
 module.exports = {
   name: 'guildMemberAdd',
   type: 'on',
   handle: async (guild, member) => {
-    if (!guild.members.get(global.bot.user.id).permission.json['manageGuild']) return
+    if (!guild.members.get(global.bot.user.id).permission.json.manageGuild) return
     const dbUser = await getUser(member.id)
     const GMAEvent = {
       guildID: guild.id,
@@ -17,12 +18,17 @@ module.exports = {
           icon_url: member.avatarURL
         },
         description: `<@${member.id}> joined `,
+        thumbnail: {
+          url: member.avatarURL
+        },
         fields: [{
           name: 'Name',
-          value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`
+          value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention}`,
+          inline: true
         }, {
           name: 'Joined At',
-          value: new Date().toString()
+          value: new Date().toString(),
+          inline: true
         }, {
           name: 'Account Age',
           value: `**${Math.floor((new Date() - member.user.createdAt) / 86400000)}** days`,
@@ -42,8 +48,9 @@ module.exports = {
     let guildInvites
     try {
       guildInvites = await guild.getInvites()
-      let cachedInvites = await inviteCache.getCachedInvites(guild.id)
+      const cachedInvites = await inviteCache.getCachedInvites(guild.id)
       guildInvites = guildInvites.map(invite => `${invite.code}|${invite.hasOwnProperty('uses') ? invite.uses : 'Infinite'}`)
+      const codeUsedFromBroker = inviteJoinBroker.ask(member.id)
       const usedInviteStr = compareInvites(guildInvites, cachedInvites)
       if (!usedInviteStr) {
         if (guild.features.includes('VANITY_URL')) {
@@ -60,7 +67,13 @@ module.exports = {
           })
         }
       }
-      if (usedInviteStr) {
+      if (codeUsedFromBroker) {
+        GMAEvent.embed.fields.push({
+          name: 'Invite Used',
+          value: `${codeUsedFromBroker} (single use invite)`,
+          inline: true
+        })
+      } else if (usedInviteStr) {
         const split = usedInviteStr.split('|')
         const usedInvite = {
           code: split[0],
@@ -94,7 +107,7 @@ module.exports = {
   }
 }
 
-function compareInvites(current, saved) {
+function compareInvites (current, saved) {
   let i = 0
   for (i = 0; i < current.length; i++) {
     if (current[i] !== saved[i]) return current[i]

@@ -20,16 +20,16 @@ module.exports = {
     } else if (newMessage.content !== oldMessage.content) {
       await processMessage(newMessage, oldMessage)
     }
-    async function processMessage(newMessage, oldMessage) {
+    async function processMessage (newMessage, oldMessage) {
       const messageUpdateEvent = {
         guildID: newMessage.channel.guild.id,
         eventName: 'messageUpdate',
         embed: {
           author: {
-            name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
+            name: `${newMessage.author.username}#${newMessage.author.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`,
             icon_url: newMessage.author.avatarURL
           },
-          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
+          description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${newMessage.author.mention} ${member && member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
           fields: [{
             name: 'Channel',
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})\n[Go To Message](https://discordapp.com/channels/${newMessage.channel.guild.id}/${newMessage.channel.id}/${newMessage.id})`
@@ -41,8 +41,8 @@ module.exports = {
       const beforeChunks = []
       if (newMessage.content) {
         if (newMessage.content.length > 1024) {
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          nowChunks.push(newMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
+          nowChunks.push(newMessage.content.replace(/"/g, '"').replace(/`/g, '').substring(0, 1023))
+          nowChunks.push(newMessage.content.replace(/"/g, '"').replace(/`/g, '').substring(1024, newMessage.content.length))
         } else {
           nowChunks.push(newMessage.content)
         }
@@ -51,8 +51,8 @@ module.exports = {
       }
       if (oldMessage.content) {
         if (oldMessage.content.length > 1024) {
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(0, 1023))
-          beforeChunks.push(oldMessage.content.replace(/\"/g, '"').replace(/`/g, '').substring(1024, oldMessage.content.length))
+          beforeChunks.push(oldMessage.content.replace(/"/g, '"').replace(/`/g, '').substring(0, 1023))
+          beforeChunks.push(oldMessage.content.replace(/"/g, '"').replace(/`/g, '').substring(1024, oldMessage.content.length))
         } else {
           beforeChunks.push(oldMessage.content)
         }
@@ -62,13 +62,15 @@ module.exports = {
       nowChunks.forEach((chunk, i) => {
         messageUpdateEvent.embed.fields.push({
           name: i === 0 ? 'Now' : 'Now Continued',
-          value: chunk
+          value: chunk,
+          inline: true
         })
       })
       beforeChunks.forEach((chunk, i) => {
         messageUpdateEvent.embed.fields.push({
           name: i === 0 ? 'Previous' : 'Previous Continued',
-          value: chunk
+          value: chunk,
+          inline: true
         })
       })
       messageUpdateEvent.embed.fields.push({

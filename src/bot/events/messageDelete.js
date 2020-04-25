@@ -20,7 +20,7 @@ module.exports = {
     await deleteMessage(message.id)
     const cachedUser = global.bot.users.get(cachedMessage.author_id)
     const member = message.channel.guild.members.get(cachedMessage.author_id)
-    let messageDeleteEvent = {
+    const messageDeleteEvent = {
       guildID: message.channel.guild.id,
       eventName: 'messageDelete',
       embed: {
@@ -45,17 +45,17 @@ module.exports = {
       messageChunks.push('None')
     }
     messageChunks.forEach((chunk, i) => {
-        messageDeleteEvent.embed.fields.push({
-          name: i === 0 ? 'Content' : 'Continued',
-          value: chunk
-        })
+      messageDeleteEvent.embed.fields.push({
+        name: i === 0 ? 'Content' : 'Continued',
+        value: chunk
+      })
     })
     messageDeleteEvent.embed.fields.push({
       name: 'ID',
       value: `\`\`\`ini\nUser = ${cachedMessage.author_id}\nMessage = ${cachedMessage.id}\`\`\``
     }, {
       name: 'Date',
-      value: new Date(cachedMessage.ts)
+      value: new Date(cachedMessage.ts).toString()
     })
     await send(messageDeleteEvent)
   }

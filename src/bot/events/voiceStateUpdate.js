@@ -17,6 +17,9 @@ module.exports = {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
         },
+        thumbnail: {
+          url: member.avatarURL
+        },
         description: `**${member.username}#${member.discriminator}** ${member.nick ? `(${member.nick})` : ''} was `,
         fields: [{
           name: 'Voice Channel',

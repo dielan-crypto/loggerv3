@@ -104,6 +104,9 @@ module.exports = {
     if (new Date().getTime() - new Date((log.id / 4194304) + 1420070400000).getTime() < 3000) { // if the audit log is less than 3 seconds off
       channelUpdateEvent.embed.author.name = `${user.username}#${user.discriminator}`
       channelUpdateEvent.embed.author.icon_url = user.avatarURL
+      channelUpdateEvent.embed.thumbnail = {
+        url: user.avatarURL
+      }
       channelUpdateEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
       await send(channelUpdateEvent)
     } else {

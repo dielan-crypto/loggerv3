@@ -5,18 +5,18 @@ module.exports = {
     await deleteUser(message.author.id)
     await message.channel.createMessage({
       embed: {
-        'title': 'Done clearing your data.',
-        'color': 16711680,
-        'timestamp': new Date(),
-        'footer': {
-          'icon_url': global.bot.user.avatarURL,
-          'text': `${global.bot.user.username}#${global.bot.user.discriminator}`
+        title: 'Done clearing your data.',
+        color: 16711680,
+        timestamp: new Date(),
+        footer: {
+          icon_url: global.bot.user.avatarURL,
+          text: `${global.bot.user.username}#${global.bot.user.discriminator}`
         },
-        'author': {
-          'name': `${message.author.username}#${message.author.discriminator}`,
-          'icon_url': message.author.avatarURL
+        author: {
+          name: `${message.author.username}#${message.author.discriminator}`,
+          icon_url: message.author.avatarURL
         },
-        'fields': []
+        fields: []
       }
     })
   },

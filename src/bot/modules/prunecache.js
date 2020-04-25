@@ -1,10 +1,13 @@
-const send = require('../modules/webhooksender')
-const request = require('superagent')
+// const send = require('../modules/webhooksender')
+// const request = require('superagent')
+
+// This file is gutted for now, until I get the time and care to fix it
+// TODO: Fix prune cache handling logic
 
 module.exports = {
   cache: {},
   handle (logID, guild, member, perp) {
-    if (!this.cache.hasOwnProperty(logID)) {
+    if (!Object.prototype.hasOwnProperty.call(this.cache, logID)) {
       this.cache[logID] = {
         count: 0,
         guild,
@@ -12,8 +15,8 @@ module.exports = {
         perp
       }
       setTimeout(async () => {
-        this.send(logID) 
-}, 10000)
+        this.send(logID)
+      }, 10000)
     }
     this.cache[logID].list += `\n${member.username}#${member.discriminator} (${member.id})`
     this.cache[logID].count++

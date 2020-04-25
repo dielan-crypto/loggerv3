@@ -64,8 +64,11 @@ module.exports = {
     const user = logs.users[0]
     const member = channel.guild.members.get(user.id)
     if (Date.now() - ((log.id / 4194304) + 1420070400000) < 3000) { // if the audit log is less than 3 seconds off
-      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member.nick ? `(${member.nick})` : ''}`
+      channelDeleteEvent.embed.author.name = `${user.username}#${user.discriminator} ${member && member.nick ? `(${member.nick})` : ''}`
       channelDeleteEvent.embed.author.icon_url = user.avatarURL
+      channelDeleteEvent.embed.thumbnail = {
+        url: user.avatarURL
+      }
       channelDeleteEvent.embed.fields[3].value = `\`\`\`ini\nUser = ${user.id}\nChannel = ${channel.id}\`\`\``
       await send(channelDeleteEvent)
     } else {

@@ -21,11 +21,12 @@ module.exports = {
     }
     const rolesField = {
       name: 'Roles',
+      inline: true,
       value: roles.length === 0 ? 'None' : roles.map(r => r.name).join(', ') // No idea why the below line is needed
     }
     if (!rolesField.value) rolesField.value = 'None'
     if (!member.username) { // If they don't have a username, then either the lib is dying or it is a lurker
-      return await send({
+      await send({
         guildID: guild.id,
         eventName: 'guildMemberRemove',
         embed: {
@@ -37,6 +38,7 @@ module.exports = {
           description: 'A lurker has left the server'
         }
       })
+      return
     }
     const event = {
       guildID: guild.id,
@@ -56,6 +58,9 @@ module.exports = {
           name: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''}`,
           icon_url: member.avatarURL
         },
+        thumbnail: {
+          url: member.avatarURL
+        },
         color: 16711680,
         description: `${member.username}#${member.discriminator} ${member.nick ? `(${member.nick})` : ''} was kicked`,
         fields: [{
@@ -63,7 +68,8 @@ module.exports = {
           value: `${member.username}#${member.discriminator} (${member.id}) ${member.mention} ${member.bot ? '\nIs a bot' : ''}`
         }, rolesField, {
           name: 'Reason',
-          value: log.reason ? log.reason : 'None provided'
+          value: log.reason ? log.reason : 'None provided',
+          inline: true
         }, {
           name: 'ID',
           value: `\`\`\`ini\nUser = ${member.id}\nPerpetrator = ${user.id}\`\`\``
@@ -85,7 +91,7 @@ module.exports = {
       return send(event)
     } else {
       const purgeLogs = await guild.getAuditLogs(1, null, 21)
-      purgeLogEntry = purgeLogs.entries[0]
+      const purgeLogEntry = purgeLogs.entries[0]
       const user = purgeLogs.users[0]
       const dbUser = await getUser(member.id)
       if (!purgeLogEntry || Date.now() - ((purgeLogEntry.id / 4194304) + 1420070400000) > 30000) {

@@ -10,7 +10,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       for (const eventName in statsObj.eventUsage) {
         if (statsObj.eventUsage[eventName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            await Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.event.${eventName}`,
@@ -25,7 +25,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       for (const commandName in statsObj.commandUsage) {
         if (statsObj.commandUsage[commandName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            await Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.command.${commandName}`,
@@ -40,7 +40,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
       for (const miscName in statsObj.miscUsage) {
         if (statsObj.miscUsage[miscName] > 0) {
           try {
-            const result = await Zabbix.sender({
+            await Zabbix.sender({
               server: 'localhost',
               host: process.env.ZABBIX_HOST,
               key: `logger.misc.${miscName}`,
@@ -51,7 +51,7 @@ if (process.env.STAT_SUBMISSION_INTERVAL && !isNaN(parseInt(process.env.STAT_SUB
           }
         }
       }
-      
+
       statsObj = {}
     }
   }, parseInt(process.env.STAT_SUBMISSION_INTERVAL) + 250) // add 1/4 second deadband to allow the shards to respond
@@ -81,7 +81,6 @@ module.exports = async worker => {
     if (message.type && message.type === 'stats') {
       if (!statsObj.hasOwnProperty('commandUsage')) {
         statsObj = message
-        return
       } else {
         for (const commandName in message.commandUsage) {
           statsObj.commandUsage[commandName] += message.commandUsage[commandName]
