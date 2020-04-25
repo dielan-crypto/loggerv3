@@ -78,19 +78,19 @@ module.exports = {
         value: ''
       }
       differentPerms.forEach(perm => { // This is black magic, but tl;dr it determines whether a perm was set to grant/deny/inherit
-        if (newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
+        if (Object.prototype.hasOwnProperty.call(newOverwrite.json, perm) && Object.prototype.hasOwnProperty.call(oldOverwrite.json, perm)) {
           if (newOverwrite.json[perm] === true && oldOverwrite.json[perm] === false) {
             field.value += `\nALLOW ${perm}`
           } else if (newOverwrite.json[perm] === false && oldOverwrite.json[perm] === true) {
             field.value += `\nDENY ${perm}`
           }
-        } else if (newOverwrite.json.hasOwnProperty(perm) && !oldOverwrite.json.hasOwnProperty(perm)) {
+        } else if (Object.prototype.hasOwnProperty.call(newOverwrite.json, perm) && !Object.prototype.hasOwnProperty.call(oldOverwrite.json, perm)) {
           if (newOverwrite.json[perm]) {
             field.value += `\nALLOW ${perm}`
           } else {
             field.value += `\nDENY ${perm}`
           }
-        } else if (!newOverwrite.json.hasOwnProperty(perm) && oldOverwrite.json.hasOwnProperty(perm)) {
+        } else if (!newOverwrite.json.hasOwnProperty.call(perm) && oldOverwrite.json.hasOwnProperty.call(perm)) {
           field.value += `\n⚖️ neutral/inherit ${perm}`
         }
       })

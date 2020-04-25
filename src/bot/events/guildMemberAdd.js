@@ -49,7 +49,7 @@ module.exports = {
     try {
       guildInvites = await guild.getInvites()
       const cachedInvites = await inviteCache.getCachedInvites(guild.id)
-      guildInvites = guildInvites.map(invite => `${invite.code}|${invite.hasOwnProperty('uses') ? invite.uses : 'Infinite'}`)
+      guildInvites = guildInvites.map(invite => `${invite.code}|${Object.prototype.hasOwnProperty.call(invite, 'uses') ? invite.uses : 'Infinite'}`)
       const codeUsedFromBroker = inviteJoinBroker.ask(member.id)
       const usedInviteStr = compareInvites(guildInvites, cachedInvites)
       if (!usedInviteStr) {

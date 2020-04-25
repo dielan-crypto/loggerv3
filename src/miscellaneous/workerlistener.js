@@ -79,7 +79,7 @@ module.exports = async worker => {
 
   worker.on('message', message => {
     if (message.type && message.type === 'stats') {
-      if (!statsObj.hasOwnProperty('commandUsage')) {
+      if (!Object.prototype.hasOwnProperty.call(statsObj, 'commandUsage')) {
         statsObj = message
       } else {
         for (const commandName in message.commandUsage) {

@@ -85,17 +85,15 @@ module.exports = {
             value: `Now: ${after}\nWas: ${before}`
           }
         case 'afk_channel_id':
-          const beforeChannel = newGuild.channels.get(log.entries[0].before.afk_channel_id)
-          const afterChannel = newGuild.channels.get(log.entries[0].after.afk_channel_id)
-          if (!beforeChannel) {
+          if (!newGuild.channels.get(log.entries[0].before.afk_channel_id)) {
             before = 'None'
           } else {
-            before = beforeChannel.name
+            before = newGuild.channels.get(log.entries[0].before.afk_channel_id).name
           }
-          if (!afterChannel) {
+          if (!newGuild.channels.get(log.entries[0].after.afk_channel_id)) {
             after = 'None'
           } else {
-            after = afterChannel.name
+            after = newGuild.channels.get(log.entries[0].after.afk_channel_id).name
           }
           return {
             name: 'AFK Channel',

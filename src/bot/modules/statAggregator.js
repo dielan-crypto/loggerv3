@@ -59,21 +59,21 @@ const miscStatistics = {
 
 module.exports = {
   incrementCommand (command) {
-    if (!commandStatistics.hasOwnProperty(command)) {
+    if (!Object.prototype.hasOwnProperty.call(commandStatistics, command)) {
       console.error(`${command} is not a valid command to increment the statistics of!`)
       return
     }
     commandStatistics[command]++
   },
   incrementEvent (event) {
-    if (!eventStatistics.hasOwnProperty(event)) {
+    if (!Object.prototype.hasOwnProperty.call(eventStatistics, event)) {
       console.error(`${event} is not a valid event to increment the statistics of!`)
       return
     }
     eventStatistics[event]++
   },
   incrementMisc (miscItem) {
-    if (!miscStatistics.hasOwnProperty(miscItem)) {
+    if (!Object.prototype.hasOwnProperty.call(miscStatistics, miscItem)) {
       console.error(`${miscItem} is not a valid item to increment the statistics of!`)
       return
     }
