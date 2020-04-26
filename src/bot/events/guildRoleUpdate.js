@@ -36,6 +36,7 @@ module.exports = {
         }
       }
     })
+    if (guildRoleUpdateEvent.embed.fields.length === 1) return // if no old role data was added beyond the name, stop
     const logs = await guild.getAuditLogs(1, null, 31).catch(() => {})
     if (!logs) return
     const log = logs.entries[0]

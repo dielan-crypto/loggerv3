@@ -8,7 +8,39 @@ module.exports = {
     let embedAuthor
     let embedThumbnail
     const fields = []
-    if (invite.inviter.system) {
+    if (!invite.inviter) {
+      embedDescription = 'An invite has been created'
+      let inviteAge
+      switch (invite.maxAge) {
+        case 0:
+          inviteAge = 'forever'
+          break
+        case 1800:
+          inviteAge = 'for 30 minutes'
+          break
+        default:
+          inviteAge = `for ${Math.floor(invite.maxAge / 3600)} hour(s)`
+      }
+      fields.push({
+        name: 'Info',
+        value: `Invite \`${invite.code}\` with ${invite.maxUses ? invite.maxUses : 1} use(s) max`
+      }, {
+        name: 'Valid for',
+        value: `Valid ${inviteAge} ${invite.temporary ? '(temporary membership)' : ''}`
+      })
+      await send({
+        guildID: guild.id,
+        eventName: 'inviteCreate',
+        embed: {
+          description: embedDescription,
+          fields: fields.concat({
+            name: 'ID',
+            value: `\`\`\`ini\nInviter = ???\nChannel = ${invite.channel.id}\`\`\``
+          }),
+          color: 3553599
+        }
+      })
+    } else if (invite.inviter.system) {
       embedDescription = 'An invite has been created by the system.'
       embedAuthor = {
         name: 'System',
