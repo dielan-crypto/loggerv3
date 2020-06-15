@@ -1,14 +1,18 @@
 const send = require('../modules/webhooksender')
 const cacheGuild = require('../utils/cacheGuild')
+const fdb = require('../../db/interfaces/foundationdb/client')
 
 module.exports = {
   name: 'guildMemberUpdate',
   type: 'on',
-  handle: async (guild, member, oldMember) => {
+  handle: async (guild, member) => {
+    const oldMember = await fdb.upsert(member) // Update the member in foundationdb and get the old member back (TODO: change upsert name because it's misleading)
     if (!guild.members.get(global.bot.user.id).permission.json.viewAuditLogs || !guild.members.get(global.bot.user.id).permission.json.manageWebhooks) return
     if (oldMember && oldMember.nick !== member.nick) {
+      // Saves an audit log request. Yay!
       await handleMemberNickUpdate(guild, member, oldMember)
     } else {
+      // Member isn't in cache OR there was a role update.
       guild.getAuditLogs(1).then(async (log) => {
         if (!log.entries[0]) return
         const auditEntryDate = new Date((log.entries[0].id / 4194304) + 1420070400000)
@@ -33,7 +37,7 @@ async function handleMemberNickUpdate (guild, member, oldMember, log) {
       thumbnail: {
         url: member.avatarURL
       },
-      description: `${member.username}#${member.discriminator} ${member.mention} ${member.nick ? `(${member.nick})` : ''} was renamed`,
+      description: `${member.username}#${member.discriminator} ${member.mention} ${member.nick ? `(${member.nick})` : ''} ${log ? 'was renamed' : 'changed their nickname'}`, // this is flawed... too bad!
       fields: [{
         name: 'Changes',
         value: 'Unknown. Look at the footer to see who updated the affected user.'

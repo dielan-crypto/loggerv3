@@ -17,5 +17,9 @@ module.exports = {
     if (global.bot.shards.find(s => s.id === 0)) { // only check for missing settings once
       await checkForMissingSettings()
     }
+    // Set all guild member cache sizes
+    global.bot.guilds.forEach(g => {
+      g.members.limit = 0
+    })
   }
 }
