@@ -31,7 +31,7 @@ module.exports = {
           },
           description: `**${newMessage.author.username}#${newMessage.author.discriminator}** ${member.nick ? `(${member.nick})` : ''} updated their message in: ${newMessage.channel.name}.`,
           fields: [{
-            name: 'Channel',
+            name: '✅║𝐕𝐞𝐫𝐢𝐟𝐲',
             value: `<#${newMessage.channel.id}> (${newMessage.channel.name})\n[Go To Message](https://discordapp.com/channels/${newMessage.channel.guild.id}/${newMessage.channel.id}/${newMessage.id})`
           }],
           color: 15084269
